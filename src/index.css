@@ -1,0 +1,988 @@
+@import "tailwindcss";
+
+/* ── Exact MONS Font Faces ───────────────────────────────────────────────── */
+@font-face {
+  font-family: "Archivo X";
+  font-style: normal;
+  font-weight: 900;
+  font-stretch: 125%;
+  font-display: block;
+  src: url("https://fonts.gstatic.com/s/archivo/v25/k3k6o8UDI-1M0wlSV9XAw6lQkqWY8Q8EsJaRE-NWIDdgffTTnTRZ9xdp.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Sora";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JB Mono";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Silk";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("https://fonts.gstatic.com/s/silkscreen/v6/m8JXjfVPf62XiF7kO-i9YLNlaw.woff2") format("woff2");
+}
+
+/* ── Design Tokens ───────────────────────────────────────────────────────── */
+:root {
+  /* MONS Hero Stage Palette */
+  --bg: #E6E8EA;
+  --soft: #CBD7D7;
+  --mid: #4D4A4E;
+  --ink: #111012;
+  --red: #E0313F;
+  --panel: #1B1C1F;
+  --panel-text: #E9EAEC;
+
+  /* Dark Editorial Portfolio Palette */
+  --void: #0A0A0A;
+  --onyx: #151515;
+  --onyx-raised: #1C1C1F;
+  --editorial-white: #F4F1EA;
+  --smoke: #9B9B9B;
+  --divider: #2B2B2B;
+
+  /* Hero Frame Runtime Variables (updated by JS resize engine) */
+  --s: 1;
+  --fx: 0px;
+  --fy: 0px;
+  --k: 1;
+  --colw: 240px;
+  --clx: 0px;
+  --crx: 0px;
+  --tagx: 0px;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--void);
+  color: var(--editorial-white);
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--void);
+  font-family: "Sora", "Noto Sans Sinhala", -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+.font-display-x {
+  font-family: "Archivo X", sans-serif;
+}
+
+.font-mono-hud {
+  font-family: "JB Mono", ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-silk {
+  font-family: "Silk", monospace;
+}
+
+.font-sinhala {
+  font-family: "Sora", "Noto Sans Sinhala", sans-serif;
+}
+
+/* ── Chamfer Clip Paths ──────────────────────────────────────────────────── */
+.chamfer-5 {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 5px) 0,
+    100% 5px,
+    100% 100%,
+    5px 100%,
+    0 calc(100% - 5px)
+  );
+}
+
+.chamfer-12 {
+  clip-path: polygon(
+    12px 0,
+    100% 0,
+    100% calc(100% - 12px),
+    calc(100% - 12px) 100%,
+    0 100%,
+    0 12px
+  );
+}
+
+.chamfer-14 {
+  clip-path: polygon(
+    14px 0,
+    100% 0,
+    100% calc(100% - 14px),
+    calc(100% - 14px) 100%,
+    0 100%,
+    0 14px
+  );
+}
+
+/* ── MONS Hero Stage ─────────────────────────────────────────────────────── */
+#stage {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  touch-action: pan-y;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#stage.is-pointer {
+  cursor: pointer;
+}
+
+/* Topographic contour background */
+#stage .tex {
+  position: absolute;
+  inset: -24px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: 0.6;
+  -webkit-mask-image: radial-gradient(ellipse 48% 58% at 50% 46%, transparent 35%, #000 80%);
+  mask-image: radial-gradient(ellipse 48% 58% at 50% 46%, transparent 35%, #000 80%);
+  will-change: translate;
+}
+
+/* 1440x900 Design Frame */
+#frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 900px;
+  transform-origin: 0 0;
+  transform: translate(var(--fx), var(--fy)) scale(var(--s));
+  pointer-events: none;
+}
+
+/* Chevrons */
+#chevTR,
+#chevL {
+  position: absolute;
+  inset: 0;
+  width: 1440px;
+  height: 900px;
+  overflow: visible;
+  pointer-events: none;
+  will-change: translate, transform;
+}
+
+#stage[data-tier="S"] #chevTR,
+#stage[data-tier="P"] #chevTR {
+  clip-path: inset(0 -2000px -2000px -2000px);
+}
+
+#chevTR .chev-shift {
+  transform: translateX(var(--crx));
+}
+
+#chevL .chev-shift {
+  transform: translateX(var(--clx));
+}
+
+/* Wordmark #wm */
+#wm {
+  position: absolute;
+  left: var(--wm-left, 70px);
+  top: var(--wm-top, 114px);
+  font-family: "Archivo X", sans-serif;
+  font-weight: 900;
+  font-size: var(--wm-size, 250px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+  pointer-events: none;
+  will-change: translate;
+}
+
+#wm .band {
+  display: block;
+  transform: scaleY(1.24);
+  transform-origin: 0 0;
+}
+
+#wm .slice {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* Frosted glass overlays inside wordmark (sized in em so they scale with type) */
+#wm .glass {
+  position: absolute;
+  background: rgba(232, 234, 236, 0.34);
+  backdrop-filter: blur(11px) saturate(110%);
+  -webkit-backdrop-filter: blur(11px) saturate(110%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  pointer-events: none;
+  will-change: translate;
+}
+
+#wm .g1 {
+  left: 0.04em;
+  top: 0.76em;
+  width: 1.38em;
+  height: 0.34em;
+  border-right: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent);
+  mask-image: linear-gradient(90deg, #000 80%, transparent);
+}
+
+#wm .g2 {
+  left: 4.02em;
+  top: 0.69em;
+  width: 1.12em;
+  height: 0.62em;
+  clip-path: polygon(0.14em 0, 100% 0, 100% 100%, 0 100%, 0 0.14em);
+  border: none;
+}
+
+#wm .g2-edge {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#wm .g2-hatch {
+  position: absolute;
+  right: 0.055em;
+  top: 0.05em;
+  width: 0.036em;
+  height: 0.52em;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.95) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+/* Model container (chamfered editorial monolith centered on 1440x900 frame) */
+#model {
+  position: absolute;
+  left: 440px;
+  top: 32px;
+  width: 560px;
+  height: 868px;
+  pointer-events: none;
+  background: #07080B;
+  clip-path: polygon(
+    20px 0,
+    100% 0,
+    100% calc(100% - 20px),
+    calc(100% - 20px) 100%,
+    0 100%,
+    0 20px
+  );
+  box-shadow: 0 28px 64px rgba(17, 16, 18, 0.24);
+}
+
+#model::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+#model img,
+#model canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#model img {
+  object-fit: cover;
+  object-position: center 22%;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+#model canvas {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+#model.gl canvas {
+  opacity: 1;
+}
+
+#model.gl img {
+  opacity: 0;
+}
+
+/* Deco SVG */
+#deco {
+  position: absolute;
+  inset: 0;
+  width: 1440px;
+  height: 900px;
+  overflow: visible;
+  pointer-events: none;
+  will-change: translate;
+}
+
+#deco .tag-leaders {
+  transform: translateX(var(--tagx));
+}
+
+/* Tags group */
+#tags {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: translate;
+}
+
+#tags .tags-shift {
+  position: absolute;
+  inset: 0;
+  transform: translateX(var(--tagx));
+}
+
+.hero-tag {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  background: var(--red);
+  color: #FFFFFF;
+  font-family: "JB Mono", monospace;
+  font-weight: 700;
+  font-size: max(11px, calc(11px / var(--s)));
+  height: max(22px, calc(22px / var(--s)));
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0 0.64em;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background-color 0.16s ease, transform 0.16s ease;
+}
+
+.hero-tag:hover,
+.hero-tag:focus-visible {
+  background: #C42230;
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.tag-bracket {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--mid);
+  border-style: solid;
+  border-width: 0;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.tag-bracket.tl {
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+
+.tag-bracket.br {
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+#stage.hide-tags #tags,
+#stage.hide-tags #deco .tag-leaders {
+  display: none;
+}
+
+/* ── Viewport HUD (pinned inside #stage) ─────────────────────────────────── */
+.hud-logo {
+  position: absolute;
+  left: max(16px, calc(38px * var(--k)));
+  top: max(14px, calc(22px * var(--k)));
+  width: max(44px, calc(62px * var(--k)));
+  height: max(24px, calc(24px * var(--k)));
+  background: var(--panel);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  z-index: 20;
+  text-decoration: none;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+}
+
+.hud-logo:hover {
+  background: #0F1012;
+}
+
+.hud-logo-bar {
+  width: 5px;
+  height: 9px;
+  background: var(--red);
+  transform: skewX(-20deg);
+  display: block;
+}
+
+.hud-nav {
+  position: absolute;
+  top: max(12px, calc(18px * var(--k)));
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: max(18px, calc(38px * var(--k)));
+  padding: 0 max(14px, calc(22px * var(--k)));
+  height: max(28px, calc(32px * var(--k)));
+  border: 1px solid rgba(17, 16, 18, 0.16);
+  border-radius: 0 0 8px 8px;
+  background: rgba(240, 241, 242, 0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 20;
+}
+
+.hud-nav a {
+  font-family: "JB Mono", monospace;
+  font-weight: 500;
+  font-size: max(11px, calc(10px * var(--k)));
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 7px 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color 0.16s ease;
+}
+
+.hud-nav a:hover,
+.hud-nav a:focus-visible {
+  color: var(--red);
+  outline: none;
+}
+
+#stage[data-tier="P"] .hud-nav {
+  left: auto;
+  right: 16px;
+  transform: none;
+  border-radius: 8px;
+  gap: 14px;
+  padding: 0 12px;
+}
+
+/* Copy card .card (bottom-right on L, left column on S, top stack on P) */
+.hud-card {
+  position: absolute;
+  right: max(16px, calc(42px * var(--k)));
+  bottom: max(16px, calc(67px * var(--k)));
+  width: min(calc(100vw - 32px), max(250px, calc(435px * var(--k))));
+  padding:
+    max(14px, calc(31px * var(--k)))
+    max(14px, calc(24px * var(--k)))
+    max(16px, calc(44px * var(--k)))
+    max(16px, calc(37px * var(--k)));
+  background: rgba(236, 238, 240, 0.56);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  z-index: 15;
+  will-change: translate;
+}
+
+.hud-card-eyebrow {
+  font-family: "JB Mono", monospace;
+  font-weight: 500;
+  font-size: max(11px, calc(10.5px * var(--k)));
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin: 0 0 max(8px, calc(10px * var(--k))) 0;
+  padding-right: 28px;
+}
+
+.hud-card-headline {
+  font-family: "Sora", sans-serif;
+  font-weight: 600;
+  font-size: max(17px, calc(33px * var(--k)));
+  line-height: 1.09;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.hud-card-actions {
+  margin-top: max(10px, calc(16px * var(--k)));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.hud-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "JB Mono", monospace;
+  font-weight: 700;
+  font-size: max(11px, calc(10px * var(--k)));
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 6px 12px;
+  min-height: 28px;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.hud-card-cta.primary {
+  background: var(--ink);
+  color: #FFFFFF;
+}
+
+.hud-card-cta.primary:hover {
+  background: var(--red);
+}
+
+.hud-card-cta.secondary {
+  color: var(--ink);
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.hud-card-cta.secondary:hover {
+  color: var(--red);
+}
+
+.hud-card-crosshair {
+  position: absolute;
+  top: max(12px, calc(18px * var(--k)));
+  right: max(12px, calc(18px * var(--k)));
+  width: max(16px, calc(24px * var(--k)));
+  height: max(16px, calc(24px * var(--k)));
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+/* Hint panel .hint (bottom-left) */
+.hud-hint {
+  position: absolute;
+  left: max(16px, calc(40px * var(--k)));
+  bottom: max(16px, calc(55px * var(--k)));
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  min-width: min(calc(100vw - 32px), calc(418px * var(--k)));
+  background: var(--panel);
+  color: var(--panel-text);
+  padding:
+    max(10px, calc(20px * var(--k)))
+    max(14px, calc(20px * var(--k)))
+    max(10px, calc(20px * var(--k)))
+    max(34px, calc(56px * var(--k)));
+  z-index: 15;
+  will-change: translate;
+}
+
+.hud-hint-hatch {
+  position: absolute;
+  left: max(10px, calc(18px * var(--k)));
+  top: 8px;
+  bottom: 8px;
+  width: max(8px, calc(12px * var(--k)));
+  background: repeating-linear-gradient(
+    -45deg,
+    #E9EAEC 0 2px,
+    transparent 2px 5px
+  );
+  opacity: 0.88;
+}
+
+.hud-hint-line {
+  font-family: "JB Mono", monospace;
+  font-weight: 500;
+  font-size: max(11px, calc(10.5px * var(--k)));
+  line-height: 1.7;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.hud-hint-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--panel-text);
+  font-family: "JB Mono", monospace;
+  font-weight: 600;
+  font-size: max(11px, calc(10.5px * var(--k)));
+  line-height: 1.7;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 24px;
+  transition: color 0.16s ease;
+}
+
+.hud-hint-scroll:hover,
+.hud-hint-scroll:focus-visible {
+  color: var(--red);
+  outline: none;
+}
+
+/* Tier S (short landscape < 560px height) */
+#stage[data-tier="S"] .hud-card {
+  right: auto;
+  bottom: auto;
+  left: 16px;
+  top: 56px;
+  width: var(--colw);
+  padding: 12px 14px 14px 16px;
+}
+
+#stage[data-tier="S"] .hud-card-headline {
+  font-size: 16px;
+}
+
+#stage[data-tier="S"] .hud-card-actions {
+  margin-top: 8px;
+  gap: 8px;
+}
+
+#stage[data-tier="S"] .hud-hint {
+  left: 16px;
+  bottom: 14px;
+  width: var(--colw);
+  min-width: 0;
+  padding: 10px 12px 10px 30px;
+}
+
+#stage[data-tier="S"] .hud-hint-line {
+  white-space: normal;
+}
+
+/* Tier P (portrait < 1.05 ratio) */
+#stage[data-tier="P"] .hud-card {
+  right: 16px;
+  left: 16px;
+  top: 64px;
+  bottom: auto;
+  width: auto;
+  padding: 14px 16px 16px 18px;
+}
+
+#stage[data-tier="P"] .hud-hint {
+  left: 16px;
+  right: 16px;
+  top: var(--p-hint-top, 198px);
+  bottom: auto;
+  width: auto;
+  min-width: 0;
+  padding: 10px 14px 10px 34px;
+}
+
+@media (max-width: 420px) {
+  .hud-hint-line {
+    white-space: normal;
+  }
+}
+
+/* ── Hover Tip & Spec Card (fixed above everything) ─────────────────────── */
+#tip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 160ms ease;
+  will-change: transform, opacity;
+}
+
+#tip.on {
+  opacity: 1;
+}
+
+.tip-top {
+  background: var(--red);
+  color: #FFFFFF;
+  font-family: "JB Mono", monospace;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.tip-sub {
+  background: var(--panel);
+  color: var(--panel-text);
+  font-family: "JB Mono", monospace;
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.tip-sub span {
+  color: var(--red);
+  font-weight: 700;
+}
+
+#spec {
+  position: fixed;
+  z-index: 70;
+  width: 268px;
+  max-width: calc(100vw - 24px);
+  background: var(--panel);
+  color: var(--panel-text);
+  padding: 16px 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  pointer-events: none;
+}
+
+#spec.on {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Opening Loader & Intro Reveals ──────────────────────────────────────── */
+#ld {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.ld-strips {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ld-strip {
+  flex: 1;
+  background: #09090A;
+  transform: translateX(0);
+  will-change: transform;
+}
+
+#ld.wiping .ld-strip {
+  transition: transform 260ms cubic-bezier(0.7, 0, 0.3, 1);
+}
+
+#ld.wiping .ld-strip:nth-child(even) {
+  transform: translateX(-104%);
+}
+
+#ld.wiping .ld-strip:nth-child(odd) {
+  transform: translateX(104%);
+}
+
+.ld-word {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Silk", monospace;
+  font-size: clamp(34px, 6vw, 72px);
+  letter-spacing: 0.06em;
+  color: var(--red);
+  transition: opacity 70ms ease;
+}
+
+#ld.wiping .ld-word,
+#ld.wiping .ld-bar-wrap {
+  opacity: 0;
+}
+
+.ld-ch {
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  animation: ldFlicker 200ms steps(4) forwards;
+}
+
+.ld-ch-first {
+  animation: ldFlicker 200ms steps(4) forwards, ldJump 120ms steps(2) 300ms 1;
+}
+
+.ld-ghost {
+  position: absolute;
+  left: -0.32em;
+  top: -0.18em;
+  color: rgba(224, 49, 63, 0.35);
+  pointer-events: none;
+}
+
+@keyframes ldFlicker {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+@keyframes ldJump {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-6px, -4px); }
+}
+
+.ld-bar-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: opacity 70ms ease;
+}
+
+.ld-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--red);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+/* Wordmark intro slice glitch */
+@keyframes wmSliceIn {
+  0% {
+    opacity: 0;
+    transform: translateX(var(--slx)) scaleY(1.24);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(calc(var(--slx) * -0.25)) scaleY(1.24);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleY(1.24);
+  }
+}
+
+/* Intro Reveal Guards */
+html.js-anim .rv {
+  opacity: 0;
+}
+
+html.js-anim .rv-y8 {
+  transform: translateY(8px);
+}
+
+html.js-anim .rv-y14 {
+  transform: translateY(14px);
+}
+
+html.js-anim .rv-chev-l {
+  transform: translateX(-420px);
+}
+
+html.js-anim .rv-chev-r {
+  transform: translateX(420px);
+}
+
+html.js-anim .rv-model {
+  filter: brightness(1.9) contrast(0.6);
+}
+
+html.js-anim.done .rv {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.rv-nav {
+  transition: opacity 900ms cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+
+.rv-hud {
+  transition:
+    opacity 900ms cubic-bezier(0.16, 0.84, 0.24, 1),
+    transform 900ms cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+
+.rv-chev {
+  transition:
+    opacity 520ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.rv-model-tr {
+  transition:
+    opacity 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ── Reduced Motion Overrides ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  #ld {
+    display: none !important;
+  }
+
+  html.js-anim .rv,
+  html.js-anim .rv-y8,
+  html.js-anim .rv-y14,
+  html.js-anim .rv-chev-l,
+  html.js-anim .rv-chev-r,
+  html.js-anim .rv-model {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  #tip,
+  #spec,
+  .rv-nav,
+  .rv-hud,
+  .rv-chev,
+  .rv-model-tr {
+    transition: none !important;
+  }
+}

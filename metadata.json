@@ -1,0 +1,6 @@
+{
+  "name": "SMOKIO — Kevin Smokio",
+  "description": "Interactive unmask-trail hero and artist portfolio concept for Sri Lankan hip-hop artist Kevin Smokio (SMOKIO), featuring verified music, official videos, and timeline.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
