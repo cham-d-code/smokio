@@ -55,20 +55,14 @@ export type GalleryFrame = {
   imageUrl?: string;
   imageAlt?: string;
   objectPosition?: string;
+  photoCredit?: string;
 };
 
 // User-provided Kevin Smokio artist photography
 export const HERO_MEDIA = {
-  portraitUrl: '/assets/aistudio/image_9f8af6b7.png',
+  portraitUrl: '/assets/hooded-streetwear-portrait.png',
   cinemaStillUrl: '/assets/aistudio/image_c08686c3.png',
-  alt: 'Kevin Smokio studio portrait wearing a red cap, tinted aviator sunglasses, and black hooded streetwear jacket',
-  // Centered portrait monolith geometry inside the 1440x900 design frame
-  box: {
-    left: 440,
-    top: 32,
-    width: 560,
-    height: 868,
-  },
+  alt: 'Kevin Smokio wearing a black hoodie and gold-framed sunglasses',
 };
 
 export const ARTIST_PROFILE = {
@@ -411,50 +405,53 @@ export const OFFICIAL_SOCIALS: SocialLink[] = [
 
 export const GALLERY_FRAMES: GalleryFrame[] = [
   {
-    id: 'press-portrait',
+    id: 'front-row',
     index: '01',
-    title: 'Red Cap Studio Portrait',
-    category: 'Editorial Portrait · Kevin Smokio',
+    title: 'Front Row',
+    category: 'Live Performance',
     aspect: 'tall',
-    artDirectionNote:
-      'High-contrast studio profile of Kevin Smokio in a crimson cap, tinted aviators, and dark layered streetwear.',
-    assetSlot: '/assets/aistudio/image_9f8af6b7.png',
-    imageUrl: '/assets/aistudio/image_9f8af6b7.png',
-    imageAlt: 'Kevin Smokio studio portrait wearing a red cap and dark hooded jacket',
-    objectPosition: 'center 20%',
+    artDirectionNote: 'Black-and-white photo of Smokio reaching for fans in a white outfit.',
+    assetSlot: '/assets/gallery/smokio-front-row.jpg',
+    imageUrl: '/assets/gallery/smokio-front-row.jpg',
+    imageAlt: 'Black-and-white photo of Smokio reaching for fans in a white outfit.',
+    objectPosition: 'center 30%',
+    photoCredit: 'Photo by Nadula De Silva Photography.',
   },
   {
-    id: 'cinematic-still',
+    id: 'under-the-lights',
     index: '02',
-    title: 'Hooded Close-Up Frame',
-    category: 'Music Video Visual · Kevin Smokio',
+    title: 'Under the Lights',
+    category: 'Live Performance',
     aspect: 'wide',
-    artDirectionNote:
-      'Wide-angle hooded close-up with gold-trimmed geometric eyewear and cinematic urban lighting.',
-    assetSlot: '/assets/aistudio/image_c08686c3.png',
-    imageUrl: '/assets/aistudio/image_c08686c3.png',
-    imageAlt: 'Kevin Smokio close-up in black hood and gold geometric sunglasses',
-    objectPosition: 'center 35%',
+    artDirectionNote: 'Smokio in a teal outfit and white cap performing in front of a crowd.',
+    assetSlot: '/assets/gallery/smokio-under-the-lights.jpg',
+    imageUrl: '/assets/gallery/smokio-under-the-lights.jpg',
+    imageAlt: 'Smokio in a teal outfit and white cap performing in front of a crowd.',
+    objectPosition: 'center 52%',
   },
   {
-    id: 'stage-performance',
+    id: 'on-the-mic',
     index: '03',
-    title: 'Colombo Live Stage Frame',
-    category: 'Live Performance · Approved Asset Slot',
+    title: 'On the Mic',
+    category: 'Live Performance',
     aspect: 'square',
-    artDirectionNote:
-      'Documentary performance photography capturing crowd energy and stage lighting. Ready for licensed concert photography.',
-    assetSlot: 'public/images/live-stage-03.webp',
+    artDirectionNote: 'Smokio rapping into a microphone in a red-and-white bandana.',
+    assetSlot: '/assets/gallery/smokio-on-the-mic.jpg',
+    imageUrl: '/assets/gallery/smokio-on-the-mic.jpg',
+    imageAlt: 'Smokio rapping into a microphone in a red-and-white bandana.',
+    objectPosition: 'center 26%',
   },
   {
-    id: 'studio-session',
+    id: 'stage-portrait',
     index: '04',
-    title: 'Studio & Recording Session',
-    category: 'Behind the Music · Approved Asset Slot',
+    title: 'Stage Portrait',
+    category: 'Live Performance',
     aspect: 'square',
-    artDirectionNote:
-      'Candid vocal booth and production desk stills from Sinhala hip-hop recording sessions.',
-    assetSlot: 'public/images/studio-session-04.webp',
+    artDirectionNote: 'Smokio onstage in sunglasses and a black leather jacket.',
+    assetSlot: '/assets/gallery/smokio-stage-portrait.jpg',
+    imageUrl: '/assets/gallery/smokio-stage-portrait.jpg',
+    imageAlt: 'Smokio onstage in sunglasses and a black leather jacket.',
+    objectPosition: 'center 15%',
   },
 ];
 

@@ -8,7 +8,6 @@ import {
   type HeroHotspot,
 } from '../data/smokio';
 import { getContourSvgDataUri } from '../lib/contour';
-import { createUnmaskWebGL, type UnmaskController } from '../lib/unmaskWebGL';
 
 interface MonsSmokioHeroProps {
   onPlayYoutube: (youtubeId: string, title: string, youtubeUrl: string) => void;
@@ -57,7 +56,6 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
   onScrollToSection,
 }) => {
   const stageRef = useRef<HTMLElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const hintRef = useRef<HTMLDivElement | null>(null);
   const tipRef = useRef<HTMLDivElement | null>(null);
@@ -81,13 +79,11 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
     tier: 'L' as Tier,
   });
 
-  const webglRef = useRef<UnmaskController | null>(null);
   const touchDrawingRef = useRef(false);
   const inViewRef = useRef(true);
 
   const [tier, setTier] = useState<Tier>('L');
   const [hideTags, setHideTags] = useState(false);
-  const [glReady, setGlReady] = useState(false);
   const [loaderPhase, setLoaderPhase] = useState<'loading' | 'wiping' | 'gone'>('loading');
   const [barProgress, setBarProgress] = useState<0 | 0.8 | 1>(0);
   const [showSlices, setShowSlices] = useState(false);
@@ -208,8 +204,6 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
       metricsRef.current = { s, fx, fy, k, tier: nextTier };
       setTier(nextTier);
       setHideTags((nextTier === 'P' && vw < 640) || (nextTier === 'S' && vw < 700));
-
-      webglRef.current?.resize(s);
     };
 
     computeLayout();
@@ -222,7 +216,7 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
     };
   }, []);
 
-  // Pause WebGL + parallax when hero is scrolled out of viewport
+  // Pause parallax when hero is scrolled out of viewport
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -230,15 +224,14 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
       (entries) => {
         const visible = entries[0]?.isIntersecting ?? true;
         inViewRef.current = visible;
-        webglRef.current?.setActive(visible && !reducedMotion);
       },
       { threshold: 0.05 }
     );
     io.observe(stage);
     return () => io.disconnect();
-  }, [reducedMotion]);
+  }, []);
 
-  // Opening Sequence + Image/Font Loading + WebGL Initialization
+  // Opening Sequence + Image/Font Loading
   useEffect(() => {
     let cancelled = false;
     const timers: number[] = [];
@@ -274,19 +267,9 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
     const fontsReady = document.fonts ? document.fonts.ready.catch(() => {}) : Promise.resolve();
     const imageReady = loadCorsImage(HERO_MEDIA.portraitUrl).catch(() => null);
 
-    Promise.all([minDelay, fontsReady, imageReady]).then(([, , portraitImg]) => {
+    Promise.all([minDelay, fontsReady, imageReady]).then(() => {
       if (cancelled) return;
       clearTimeout(failsafe);
-
-      // Build WebGL once Smokio's portrait is decoded
-      if (portraitImg && canvasRef.current) {
-        const ctrl = createUnmaskWebGL(canvasRef.current, portraitImg, HERO_MEDIA.box);
-        if (ctrl) {
-          webglRef.current = ctrl;
-          ctrl.resize(metricsRef.current.s);
-          setGlReady(true);
-        }
-      }
 
       // Bar 0.8 -> 1.0 in 90ms
       setBarProgress(1);
@@ -320,12 +303,10 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
       cancelled = true;
       cancelAnimationFrame(barRaf);
       timers.forEach(clearTimeout);
-      webglRef.current?.destroy();
-      webglRef.current = null;
     };
   }, []);
 
-  // Magnetic Repel Parallax + Pointer Unmask + Hit Testing
+  // Magnetic Repel Parallax + Hit Testing
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -417,13 +398,11 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
     const onPointerDown = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') {
         touchDrawingRef.current = true;
-        const { x, y, nx, ny } = getFrameCoords(e.clientX, e.clientY);
+        const { nx, ny } = getFrameCoords(e.clientX, e.clientY);
         if (!reducedMotion) {
           tx = Math.max(-1, Math.min(1, nx));
           ty = Math.max(-1, Math.min(1, ny));
           kickParallax();
-          webglRef.current?.breakTrail();
-          webglRef.current?.stampFramePoint(x, y);
         }
       }
     };
@@ -440,7 +419,6 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
         tx = Math.max(-1, Math.min(1, nx));
         ty = Math.max(-1, Math.min(1, ny));
         kickParallax();
-        webglRef.current?.stampFramePoint(x, y);
       }
 
       if (e.pointerType === 'mouse') {
@@ -457,7 +435,6 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
     const onPointerUp = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') {
         touchDrawingRef.current = false;
-        webglRef.current?.breakTrail();
         tx = 0;
         ty = 0;
         kickParallax();
@@ -466,7 +443,6 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
 
     const onPointerLeave = () => {
       touchDrawingRef.current = false;
-      webglRef.current?.breakTrail();
       setHoveredHotspot(null);
       tx = 0;
       ty = 0;
@@ -729,18 +705,30 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
             </div>
           </div>
 
-          {/* 5.4 Model (Kevin Smokio Portrait WebGL Unmask Canvas + Fallback <img>) */}
+          {/* 5.4 Kevin Smokio portrait */}
           <div
             id="model"
-            className={`${glReady && !reducedMotion ? 'gl' : ''} rv rv-model rv-model-tr`}
+            className="rv rv-model rv-model-tr"
             style={{ transitionDelay: revealStarted ? '120ms' : '0ms' }}
+            onPointerMove={(event) => {
+              const model = event.currentTarget;
+              const bounds = model.getBoundingClientRect();
+              model.style.setProperty('--portrait-x', `${((event.clientX - bounds.left) / bounds.width) * 100}%`);
+              model.style.setProperty('--portrait-y', `${((event.clientY - bounds.top) / bounds.height) * 100}%`);
+            }}
           >
             <img
               src={HERO_MEDIA.portraitUrl}
               alt={HERO_MEDIA.alt}
               draggable={false}
             />
-            <canvas ref={canvasRef} aria-hidden="true" />
+            <img
+              className="hero-portrait-color"
+              src={HERO_MEDIA.portraitUrl}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+            />
           </div>
 
           {/* 5.5 Decorative SVG (Leader Lines, Hairline, 3 Crosshairs) */}
@@ -929,7 +917,7 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
           style={{ transitionDelay: revealStarted ? '855ms' : '0ms' }}
         >
           <div className="hud-hint-hatch" aria-hidden="true" />
-          <p className="hud-hint-line">Hover to unmask / click a piece to view</p>
+          <p className="hud-hint-line">Hover for color / click a piece to view</p>
           <button
             type="button"
             className="hud-hint-scroll"

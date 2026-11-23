@@ -129,14 +129,9 @@ export const GalleryShowsContact: React.FC<GalleryShowsContactProps> = ({
                 THROUGH THE LENS.
               </h2>
               <p className="mt-3 text-[#9B9B9B] text-base max-w-[52ch]">
-                Portraits, performances and moments behind the music. Structured for licensed
-                photography supplied directly by the artist or credited photographers.
+                Kevin Smokio onstage.
               </p>
             </div>
-
-            <p className="font-mono-hud text-[11px] uppercase tracking-[0.1em] text-[#9B9B9B] max-w-[34ch] md:text-right">
-              Rights-First Policy · No Unlicensed Reposting or Fabricated Likenesses
-            </p>
           </div>
 
           {/* Bento Editorial Frames */}
@@ -286,6 +281,7 @@ export const GalleryShowsContact: React.FC<GalleryShowsContactProps> = ({
                 </div>
                 <div className="px-6 py-4 border-t border-[#2B2B2B] text-sm text-[#9B9B9B]">
                   {activeFrame.artDirectionNote}
+                  {activeFrame.photoCredit && <p className="mt-1">{activeFrame.photoCredit}</p>}
                 </div>
               </div>
             ) : (

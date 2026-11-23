@@ -282,61 +282,62 @@ body {
   );
 }
 
-/* Model container (chamfered editorial monolith centered on 1440x900 frame) */
+/* Hero portrait */
 #model {
   position: absolute;
   left: 440px;
   top: 32px;
   width: 560px;
   height: 868px;
-  pointer-events: none;
-  background: #07080B;
-  clip-path: polygon(
-    20px 0,
-    100% 0,
-    100% calc(100% - 20px),
-    calc(100% - 20px) 100%,
-    0 100%,
-    0 20px
-  );
-  box-shadow: 0 28px 64px rgba(17, 16, 18, 0.24);
-}
-
-#model::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-}
-
-#model img,
-#model canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
+  pointer-events: auto;
 }
 
 #model img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center 22%;
-  opacity: 1;
-  transition: opacity 0.25s ease;
+  object-position: 60% top;
 }
 
-#model canvas {
-  opacity: 0;
-  transition: opacity 0.25s ease;
+#model img:first-child {
+  filter: grayscale(1);
 }
 
-#model.gl canvas {
-  opacity: 1;
+#model .hero-portrait-color {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  mask-image: radial-gradient(
+    circle at var(--portrait-x, 50%) var(--portrait-y, 50%),
+    #000 90px,
+    transparent 190px
+  );
 }
 
-#model.gl img {
-  opacity: 0;
+@media (hover: hover) {
+  #model:hover {
+    cursor: none;
+  }
+
+  #model:hover .hero-portrait-color {
+    visibility: visible;
+  }
+
+  #model:hover::after {
+    content: "";
+    position: absolute;
+    left: var(--portrait-x, 50%);
+    top: var(--portrait-y, 50%);
+    width: 64px;
+    height: 64px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 60%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
 }
 
 /* Deco SVG */
