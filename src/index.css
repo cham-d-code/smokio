@@ -222,6 +222,46 @@ body {
   transform-origin: 0 0;
 }
 
+#wm .band-loop {
+  overflow: hidden;
+}
+
+#wm .band-name {
+  display: block;
+}
+
+#wm .band-alias {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+#wm .band-loop .band-name {
+  animation: heroWordmarkName 6s ease-in-out infinite;
+}
+
+#wm .band-loop .band-alias {
+  visibility: visible;
+  animation: heroWordmarkAlias 6s ease-in-out infinite;
+}
+
+/* Complete each upward roll at the 5s and 6s boundaries. */
+@keyframes heroWordmarkName {
+  0%, 78.333333%, 100% { transform: translateY(0); }
+  83.333333% {
+    transform: translateY(-100%);
+    animation-timing-function: step-end;
+  }
+  95% { transform: translateY(100%); }
+}
+
+@keyframes heroWordmarkAlias {
+  0%, 78.333333% { transform: translateY(100%); }
+  83.333333%, 95% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+
 #wm .slice {
   position: absolute;
   top: 0;
@@ -526,6 +566,13 @@ body {
   color: var(--mid);
   margin: 0 0 max(8px, calc(10px * var(--k))) 0;
   padding-right: 28px;
+}
+
+.hud-card-tagline {
+  display: block;
+  color: var(--ink);
+  font-size: max(14px, calc(13px * var(--k)));
+  margin-bottom: 4px;
 }
 
 .hud-card-headline {

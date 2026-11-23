@@ -642,12 +642,14 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
           </svg>
 
           {/* 5.3 Giant SMOKIO Wordmark + 6 Intro Glitch Slices + Frosted Glass g1/g2 */}
-          <div id="wm" ref={wmRef} aria-label="SMOKIO">
+          <div id="wm" ref={wmRef} role="img" aria-label="SMOKIO">
             <span
-              className="band"
+              className={showSolidWordmark && !reducedMotion ? 'band band-loop' : 'band'}
               style={{ opacity: showSolidWordmark || reducedMotion ? 1 : 0 }}
+              aria-hidden="true"
             >
-              SMOKIO
+              <span className="band-name">SMOKIO</span>
+              <span className="band-alias">Z30K10</span>
             </span>
 
             {showSlices &&
@@ -880,7 +882,10 @@ export const MonsSmokioHero: React.FC<MonsSmokioHeroProps> = ({
             <line x1="2" y1="12" x2="22" y2="12" />
           </svg>
 
-          <p className="hud-card-eyebrow">{ARTIST_PROFILE.eyebrow}</p>
+          <p className="hud-card-eyebrow">
+            <strong className="hud-card-tagline">THE PEOPLE'S RAPPER</strong>
+            {ARTIST_PROFILE.eyebrow}
+          </p>
           <h1 className="hud-card-headline">
             {ARTIST_PROFILE.heroHeadlineLine1}
             <br />
